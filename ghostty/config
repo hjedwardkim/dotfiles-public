@@ -1,6 +1,6 @@
 theme = tokyonight-storm
 
-background-opacity = 0.8
+background-opacity = 0.80
 background-blur-radius = 15
 
 window-decoration = true
@@ -15,4 +15,4 @@ macos-option-as-alt = true
 auto-update = check
 auto-update-channel = stable
 
-keybind = global:cmd+i=toggle_quick_terminal
+keybind = global:cmd+`=toggle_quick_terminal
