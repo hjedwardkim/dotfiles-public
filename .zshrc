@@ -74,10 +74,13 @@ alias python="python3"
 alias pip="pip3"
 alias awsm='~/aws-scripts/aws-manager.sh'
 alias azm='~/az-scripts/az-manager.sh'
-alias aider-auth='gcloud auth application-default login'
 alias update-all='brew update && brew upgrade && zinit update'
 alias aws-login='aws sso login --profile cm-sso'
 alias rr='ranger'
+
+# aider stuff
+alias aider-auth='gcloud auth application-default login'
+alias aider-o1='aider --model azure/o1 --model-settings-file .aider.model.settings.yaml'
 
 # ranger
 function ranger {
