@@ -10,7 +10,7 @@ if vim.g.neovide then
     return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
   end
 
-  vim.g.neovide_transparency = 0.8
+  vim.g.neovide_transparency = 1.0
   vim.g.neovide_normal_opacity = 0.20
   vim.g.transparency = 0.8
   vim.cmd([[highlight Normal guibg=NONE]])
@@ -20,9 +20,9 @@ if vim.g.neovide then
 
   vim.g.neovide_background_color = "#24283b" .. alpha()
 
-  vim.g.neovide_window_blurred = false
-  vim.g.neovide_floating_blur_amount_x = 15.0
-  vim.g.neovide_floating_blur_amount_y = 15.0
+  vim.g.neovide_window_blurred = true
+  --vim.g.neovide_floating_blur_amount_x = 1.0
+  --vim.g.neovide_floating_blur_amount_y = 1.0
   vim.g.neovide_floating_shadow = true
   vim.g.neovide_light_radius = 15
 
