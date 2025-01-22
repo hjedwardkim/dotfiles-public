@@ -74,13 +74,14 @@ alias python="python3"
 alias pip="pip3"
 alias awsm='~/aws-scripts/aws-manager.sh'
 alias azm='~/az-scripts/az-manager.sh'
-alias update-all='brew update && brew upgrade && zinit update'
+alias update-all='brew update && brew upgrade && zinit update && uv tool upgrade --all'
 alias aws-login='aws sso login --profile cm-sso'
 alias rr='ranger'
 
 # aider stuff
 alias aider-auth='gcloud auth application-default login'
 alias aider-o1='aider --model azure/o1 --model-settings-file .aider.model.settings.yaml'
+alias reload-env='load_env'
 
 # ranger
 function ranger {
@@ -108,6 +109,18 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+# Aider
+load_env() {
+    if [ -f /Users/edkim/.apikeys/.env ]; then
+        set -a
+        source /Users/edkim/.apikeys/.env
+        set +a
+    else
+        echo "Warning: .env file not found at specified location"
+    fi
+}
+load_env
 
 # Shell integrations
 eval "$(fzf --zsh)"
