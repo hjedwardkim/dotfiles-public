@@ -80,7 +80,8 @@ alias rr='ranger'
 
 # aider stuff
 alias aider-auth='gcloud auth application-default login'
-alias aider-o1='aider --model azure/o1 --model-settings-file .aider.model.settings.yaml'
+alias aider-o3='aider --model azure/o3-mini --reasoning-effort high --edit-format diff'
+
 alias reload-env='load_env'
 
 # ranger
