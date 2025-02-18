@@ -78,6 +78,8 @@ alias update-all='brew update && brew upgrade && zinit update && uv tool upgrade
 alias aws-login='aws sso login --profile cm-sso'
 alias rr='ranger'
 
+alias gct="git log --graph --oneline --all"
+
 # aider stuff
 alias aider-auth='gcloud auth application-default login'
 alias aider-o3='aider --model azure/o3-mini --reasoning-effort high --edit-format diff'
