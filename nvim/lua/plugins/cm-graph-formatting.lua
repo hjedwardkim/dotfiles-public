@@ -1,5 +1,5 @@
 -- cm-graph-formatting.lua
--- updated as of the great dev merge effort mar 6, 2025
+-- Configuration for ConfidentialMind Graph Python formatting
 
 return {
   -- Configure conform.nvim for formatting
@@ -14,10 +14,10 @@ return {
           -- Ruff will automatically read from pyproject.toml
         },
         isort = {
-          -- Configure isort to match the profile in pyproject.toml
-          args = {
-            "--profile",
-            "black",
+          -- Add isort configuration to match pyproject.toml
+          prepend_args = {
+            "--profile=black",
+            "--line-length=120",
             "--filter-files",
             "--atomic",
           },
@@ -35,9 +35,11 @@ return {
       },
       linters = {
         ruff = {
-          -- Configure ruff to use the specific rules from the project
+          -- Configure ruff linter to match pyproject.toml settings
           args = {
             "--select=E402,F811,E722",
+            "--line-length=120",
+            "--fix",
           },
         },
       },
@@ -50,16 +52,31 @@ return {
     opts = {
       servers = {
         ruff_lsp = {
-          -- Ruff LSP will read from pyproject.toml
+          -- Configure ruff-lsp to use the right settings
+          settings = {
+            lint = {
+              -- Match the selection in pyproject.toml
+              select = { "E402", "F811", "E722" },
+            },
+            format = {
+              lineLength = 120,
+            },
+          },
           on_attach = function(client, _)
             -- Disable formatting since we're using conform.nvim with ruff_format
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
+        },
+        pylsp = {
+          -- If using python-lsp-server, configure it to respect the line length
           settings = {
-            -- Match the specific lint rules in pyproject.toml
-            lint = {
-              select = { "E402", "F811", "E722" },
+            pylsp = {
+              plugins = {
+                pycodestyle = {
+                  maxLineLength = 120,
+                },
+              },
             },
           },
         },
@@ -75,8 +92,29 @@ return {
       vim.list_extend(opts.ensure_installed, {
         "ruff",
         "ruff-lsp",
-        "isort", -- Add isort
+        "isort", -- Add isort to the installation list
       })
     end,
+  },
+
+  -- Add global editor configuration for line length
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      -- These will apply to Python files
+      autocmds = {
+        {
+          "FileType",
+          {
+            pattern = "python",
+            callback = function()
+              vim.opt_local.textwidth = 120
+              -- Optional: Set colorcolumn to show the line length limit
+              vim.opt_local.colorcolumn = "120"
+            end,
+          },
+        },
+      },
+    },
   },
 }
