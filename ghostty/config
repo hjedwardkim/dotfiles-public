@@ -1,8 +1,56 @@
-# theme = tokyonight-storm
-theme = rose-pine
+# theme = Tokyo Night Storm
+# palette = 0=#1d202f
+# palette = 1=#f7768e
+# palette = 2=#9ece6a
+# palette = 3=#e0af68
+# palette = 4=#7aa2f7
+# palette = 5=#bb9af7
+# palette = 6=#7dcfff
+# palette = 7=#a9b1d6
+# palette = 8=#414868
+# palette = 9=#f7768e
+# palette = 10=#9ece6a
+# palette = 11=#e0af68
+# palette = 12=#7aa2f7
+# palette = 13=#bb9af7
+# palette = 14=#7dcfff
+# palette = 15=#c0caf5
+# background = #24283b
+# foreground = #c0caf5
+# cursor-color = #c0caf5
+# cursor-text = #1d202f
+# selection-background = #364a82
+# selection-foreground = #c0caf5v
+
+# theme = Rose Pine
+theme = Rose Pine Moon
+
+# theme = Rose Pine Dawn
+# palette = 0=#393552
+# palette = 1=#eb6f92
+# palette = 2=#3e8fb0
+# palette = 3=#f6c177
+# palette = 4=#9ccfd8
+# palette = 5=#c4a7e7
+# palette = 6=#ea9a97
+# palette = 7=#e0def4
+# palette = 8=#6e6a86
+# palette = 9=#eb6f92
+# palette = 10=#3e8fb0
+# palette = 11=#f6c177
+# palette = 12=#9ccfd8
+# palette = 13=#c4a7e7
+# palette = 14=#ea9a97
+# palette = 15=#e0def4
+# background = #232136
+# foreground = #e0def4
+# cursor-color = #e0def4
+# cursor-text = #232136
+# selection-background = #44415a
+# selection-foreground = #e0def4
 
 
-background-opacity = 0.8
+background-opacity = 0.85
 background-blur-radius = 15
 
 window-decoration = true
@@ -22,3 +70,6 @@ keybind = ctrl+h=goto_split:left
 keybind = ctrl+l=goto_split:right
 keybind = ctrl+j=goto_split:bottom
 keybind = ctrl+k=goto_split:top
+
+# claude shift enter
+keybind = shift+enter=text:\x1b\r
