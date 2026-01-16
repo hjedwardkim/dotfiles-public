@@ -74,7 +74,7 @@ alias python="python3"
 alias pip="pip3"
 alias awsm='~/aws-scripts/aws-manager.sh'
 alias azm='~/az-scripts/az-manager.sh'
-alias update-all='brew update && brew upgrade && zinit update && uv tool upgrade --all'
+alias update-all='brew update && brew upgrade && zinit update && uv tool upgrade --all && claude update && npm i -g @openai/codex'
 alias aws-login='aws sso login --profile cm-sso'
 alias rr='ranger'
 
