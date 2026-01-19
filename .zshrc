@@ -69,7 +69,7 @@ alias ll='eza -alh --icons --color=always --color-scale --group-directories-firs
 alias lt='eza --tree --level=2 --long --icons --git'
 # alias ll='eza -lahr -t=modified'
 alias ls='eza'
-alias cd='z'
+# alias cd='z'
 alias python="python3"
 alias pip="pip3"
 alias awsm='~/aws-scripts/aws-manager.sh'
@@ -125,9 +125,16 @@ load_env() {
 }
 load_env
 
+# nvm
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 # Shell integrations
 eval "$(fzf --zsh)"
-eval "$(zoxide init zsh)"
+if [[ "$CLAUDECODE" != "1" ]]; then
+  eval "$(zoxide init --cmd cd zsh)"
+fi
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/edkim/.cache/lm-studio/bin"
@@ -137,3 +144,16 @@ export PATH=$PATH:/opt/homebrew/share/google-cloud-sdk/bin
 
 # Created by `pipx` on 2024-11-26 13:44:14
 export PATH="$PATH:/Users/edkim/.local/bin"
+
+# Go bin
+export PATH="$(go env GOPATH)/bin:$PATH"
+
+export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
+
+# Added by Antigravity
+export PATH="/Users/edkim/.antigravity/antigravity/bin:$PATH"
+
+alias claude="/Users/edkim/.claude/local/claude"
+
+# Codex external editor 
+export VISUAL="code --wait"
