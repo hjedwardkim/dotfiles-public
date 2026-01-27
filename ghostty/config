@@ -1,8 +1,4 @@
 theme = TokyoNight Storm
-# theme = Rose Pine
-# theme = Rose Pine Moon
-# theme = Rose Pine Dawn
-
 background-opacity = 0.85
 background-blur-radius = 15
 
