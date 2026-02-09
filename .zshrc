@@ -80,10 +80,6 @@ alias rr='ranger'
 
 alias gct="git log --graph --oneline --all"
 
-# aider stuff
-alias aider-auth='gcloud auth application-default login'
-alias aider-o3='aider --model azure/o3-mini --reasoning-effort high --edit-format diff'
-
 alias reload-env='load_env'
 
 # ranger
@@ -113,18 +109,6 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-# Aider
-load_env() {
-    if [ -f /Users/edkim/.apikeys/.env ]; then
-        set -a
-        source /Users/edkim/.apikeys/.env
-        set +a
-    else
-        echo "Warning: .env file not found at specified location"
-    fi
-}
-load_env
-
 # nvm
 export NVM_DIR="$HOME/.nvm"
   [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
@@ -148,12 +132,13 @@ export PATH="$PATH:/Users/edkim/.local/bin"
 # Go bin
 export PATH="$(go env GOPATH)/bin:$PATH"
 
+# orbstack shenanigans
+export DOCKER_HOST=unix:///Users/$USER/.orbstack/run/docker.sock
+
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
 # Added by Antigravity
 export PATH="/Users/edkim/.antigravity/antigravity/bin:$PATH"
-
-alias claude="/Users/edkim/.claude/local/claude"
 
 # Codex external editor 
 export VISUAL="code --wait"
