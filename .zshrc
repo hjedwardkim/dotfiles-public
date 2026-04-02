@@ -73,7 +73,29 @@ alias python="python3"
 alias pip="pip3"
 alias awsm='~/aws-scripts/aws-manager.sh'
 alias azm='~/az-scripts/az-manager.sh'
-alias update-all='brew update && brew upgrade && zinit update && uv tool upgrade --all && claude update && npm i -g @openai/codex'
+safe-brew-upgrade() {
+  local cutoff=$(date -v-1d +%s)
+  local tap=$(brew --repository homebrew/core 2>/dev/null)
+  if [[ -z "$tap" || ! -d "$tap" ]]; then
+    echo "[timegate] homebrew-core tap not found, running normal upgrade"
+    brew upgrade; return
+  fi
+  local outdated=$(brew outdated --quiet)
+  [[ -z "$outdated" ]] && return
+  local safe=() skipped=()
+  while IFS= read -r pkg; do
+    local rb="$tap/Formula/${pkg:0:1}/${pkg}.rb"
+    local ts=$(git -C "$tap" log -1 --format=%at -- "$rb" 2>/dev/null)
+    if [[ -z "$ts" ]] || (( ts < cutoff )); then
+      safe+=("$pkg")
+    else
+      skipped+=("$pkg")
+    fi
+  done <<< "$outdated"
+  (( ${#skipped[@]} )) && echo "[timegate] skipping (updated <1d ago): ${skipped[*]}"
+  (( ${#safe[@]} )) && brew upgrade "${safe[@]}"
+}
+alias update-all='brew update && safe-brew-upgrade && zinit update && uv tool upgrade --all --exclude-newer $(date -v-1d +%Y-%m-%dT%H:%M:%SZ) && claude update && npm i -g @openai/codex'
 alias update-dev='claude update && npm i -g @openai/codex'
 alias aws-login='aws sso login --profile cm-sso'
 alias rr='ranger'
