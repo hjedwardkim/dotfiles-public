@@ -95,14 +95,21 @@ safe-brew-upgrade() {
   (( ${#skipped[@]} )) && echo "[timegate] skipping (updated <1d ago): ${skipped[*]}"
   (( ${#safe[@]} )) && brew upgrade "${safe[@]}"
 }
-alias update-all='brew update && safe-brew-upgrade && zinit update && uv tool upgrade --all --exclude-newer $(date -v-1d +%Y-%m-%dT%H:%M:%SZ) && claude update && npm i -g @openai/codex'
-alias update-dev='claude update && npm i -g @openai/codex'
-alias aws-login='aws sso login --profile cm-sso'
+alias update-all='brew update && safe-brew-upgrade && zinit update && uv tool upgrade --all --exclude-newer $(date -v-1d +%Y-%m-%dT%H:%M:%SZ) && claude update && npm i -g @openai/codex && pi update && opencode upgrade && omp update && herdr update'
+alias update-dev='claude update && npm i -g @openai/codex && pi update && pi update && opencode upgrade && omp update && herdr update'
 alias rr='ranger'
 
 alias gct="git log --graph --oneline --all"
 
 alias reload-env='load_env'
+
+# alias claude='claude --effort xhigh'
+
+# cm localdev iteration loop (Apple Silicon: --platforms linux/amd64 forces amd64 builds)
+alias cm-localenv-sync='cm build --branch-diff --platforms linux/amd64 && cm push --branch-diff --platforms linux/amd64 && cm gitops-sync && cm-localenv-import'
+alias cm-localenv-argo='git add -A && git commit -m $(date +"%d-%m:%H%M")'
+# ArgoCD UI: https://argocd.cmind.local (user admin)
+alias cm-localenv-pw='kubectl --context k3d-cmind-local -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo'
 
 # ranger
 function ranger {
@@ -162,5 +169,74 @@ export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 # Added by Antigravity
 export PATH="/Users/edkim/.antigravity/antigravity/bin:$PATH"
 
-# Codex external editor 
+# Codex external editor
 export VISUAL="code --wait"
+
+# Import the amd64 images cm gitops-sync just referenced into k3d (--mode direct).
+# Per image, in order: local <hash>-linuxamd64 > bare hash already on host > amd64 pull from ACR.
+# Use after: cm build && cm push && cm gitops-sync (on Apple Silicon k3d).
+cm-localenv-import() {
+  local gitops="${1:-$HOME/dev/platform-gitops}"
+  local cluster="${2:-cmind-local}"
+
+  # ACR-authed docker config, built once and reused for images that need a pull.
+  local docker_cfg=""
+  local _u _p
+  _u=$(yq '.acr_token_name' "$HOME/.config/cmctl/config.yml" 2>/dev/null)
+  _p=$(yq '.acr_token_password' "$HOME/.config/cmctl/config.yml" 2>/dev/null)
+  if [ -n "$_u" ] && [ "$_u" != "null" ] && [ -n "$_p" ] && [ "$_p" != "null" ]; then
+    docker_cfg=$(mktemp -d)
+    jq -n --arg u "$_u" --arg p "$_p" \
+      '{auths:{"confidentialmind.azurecr.io":{username:$u,password:$p}}}' > "$docker_cfg/config.json"
+  fi
+
+  # Image refs gitops-sync added. Falls back to the last commit so this still finds them
+  # when the bump was already committed (cm-localenv-argo).
+  local re='confidentialmind\.azurecr\.io/main/[a-z0-9-]+:[a-f0-9]+'
+  local imgs
+  imgs=$(git -C "$gitops" diff | grep -E '^\+' | grep -oE "$re" | sort -u)
+  if [ -z "$imgs" ]; then
+    imgs=$(git -C "$gitops" diff HEAD~1 2>/dev/null | grep -E '^\+' | grep -oE "$re" | sort -u)
+    [ -n "$imgs" ] && echo "note: working tree clean, using image refs from the last gitops commit"
+  fi
+  if [ -z "$imgs" ]; then
+    echo "no image refs found in $gitops (working tree or last commit) - nothing to import"
+    [ -n "$docker_cfg" ] && rm -rf "$docker_cfg"
+    return 0
+  fi
+
+  local n_ok=0 n_fail=0
+  local img local_img
+  while read -r img; do
+    [ -z "$img" ] && continue
+    local_img="${img}-linuxamd64"
+    if docker image inspect "$local_img" >/dev/null 2>&1; then
+      docker tag "$local_img" "$img"
+      echo "retag  $img (local -linuxamd64)"
+    elif docker image inspect "$img" >/dev/null 2>&1; then
+      echo "import $img (already on host)"
+    elif [ -n "$docker_cfg" ]; then
+      echo "pull   $img (amd64 from ACR)"
+      if ! DOCKER_DEFAULT_PLATFORM=linux/amd64 docker --config "$docker_cfg" pull --platform linux/amd64 "$img" >/dev/null; then
+        echo "  FAIL: ACR pull failed (missing from ACR?) — build it: cm build -w <svc> --platforms linux/amd64"
+        n_fail=$((n_fail + 1))
+        continue
+      fi
+    else
+      echo "skip   $img (no local build; need yq+jq and ACR creds in ~/.config/cmctl/config.yml)"
+      n_fail=$((n_fail + 1))
+      continue
+    fi
+    if k3d image import -c "$cluster" --mode direct "$img" >/dev/null 2>&1; then
+      echo "  -> imported into $cluster"
+      n_ok=$((n_ok + 1))
+    else
+      echo "  -> IMPORT FAILED"
+      n_fail=$((n_fail + 1))
+    fi
+  done <<< "$imgs"
+
+  [ -n "$docker_cfg" ] && rm -rf "$docker_cfg"
+  echo "done: $n_ok imported, $n_fail failed"
+  [ "$n_fail" -eq 0 ]
+}
