@@ -1,0 +1,15 @@
+onboarding = true
+
+[ui]
+status_indicators = "symbols"
+show_agent_labels_on_pane_borders = true
+
+[theme]
+name = "tokyo-night"
+
+[theme.custom]
+active_row_bg = "#2c324a"
+subtext0 = "#c0caf5"
+text = "#c0caf5"
+overlay0 = "#9aa5ce"
+overlay1 = "#a9b1d6"
