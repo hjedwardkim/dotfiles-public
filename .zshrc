@@ -166,9 +166,6 @@ export DOCKER_HOST=unix:///Users/$USER/.orbstack/run/docker.sock
 
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
-# Added by Antigravity
-export PATH="/Users/edkim/.antigravity/antigravity/bin:$PATH"
-
 # Codex external editor
 export VISUAL="code --wait"
 
