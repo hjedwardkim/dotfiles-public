@@ -26,14 +26,16 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 # Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
 
 # Load completions
 setopt prompt_subst
 autoload -Uz compinit && compinit
+
+# fzf-tab must load after compinit and before widget wrappers; syntax-highlighting last
+zinit light Aloxaf/fzf-tab
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -41,23 +43,26 @@ autoload -Uz compinit && compinit
 
 # Keybindings
 bindkey -v
+KEYTIMEOUT=1
 bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward
 bindkey '^e' autosuggest-accept
-bindkey '^u' autosuggest-toggle
-bindkey '^L' vi-forward-word
+bindkey '^U' backward-kill-line
+bindkey '^ ' autosuggest-accept
+bindkey '^[f' forward-word
+bindkey '^W' backward-kill-word
+bindkey '^[^?' backward-kill-word
+bindkey '^?' backward-delete-char
+bindkey '^H' backward-delete-char
 
 # History
 HISTSIZE=10000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
-setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
 setopt hist_save_no_dups
-setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Completion 
@@ -96,12 +101,10 @@ safe-brew-upgrade() {
   (( ${#safe[@]} )) && brew upgrade "${safe[@]}"
 }
 alias update-all='brew update && safe-brew-upgrade && zinit update && uv tool upgrade --all --exclude-newer $(date -v-1d +%Y-%m-%dT%H:%M:%SZ) && claude update && npm i -g @openai/codex && pi update && opencode upgrade && omp update && herdr update'
-alias update-dev='claude update && npm i -g @openai/codex && pi update && pi update && opencode upgrade && omp update && herdr update'
+alias update-dev='claude update && npm i -g @openai/codex && pi update && opencode upgrade && omp update && herdr update'
 alias rr='ranger'
 
 alias gct="git log --graph --oneline --all"
-
-alias reload-env='load_env'
 
 # alias claude='claude --effort xhigh'
 
@@ -154,9 +157,6 @@ export PATH="$PATH:/Users/edkim/.cache/lm-studio/bin"
 
 # Google cloud
 export PATH=$PATH:/opt/homebrew/share/google-cloud-sdk/bin
-
-# Created by `pipx` on 2024-11-26 13:44:14
-export PATH="$PATH:/Users/edkim/.local/bin"
 
 # Go bin
 export PATH="$(go env GOPATH)/bin:$PATH"
@@ -237,3 +237,39 @@ cm-localenv-import() {
   echo "done: $n_ok imported, $n_fail failed"
   [ "$n_fail" -eq 0 ]
 }
+
+# Kubernetes context selection
+kc-where() {
+  printf 'kubeconfig: %s\n' "${KUBECONFIG:-$HOME/.kube/config}"
+  printf 'context:    '
+  kubectl config current-context
+  printf 'server:     '
+  kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
+  printf '\n'
+}
+
+kc-localdev() {
+  export KUBECONFIG="$HOME/.kube/config"
+  kubectl config use-context k3d-cmind-local >/dev/null && kc-where
+}
+
+kc-lab() {
+  export KUBECONFIG="$HOME/.kube/config_lab101"
+  kubectl config use-context poc-lab-confmind-dev-com >/dev/null && kc-where
+}
+
+kc-dev() {
+  export KUBECONFIG="$HOME/.kube/config_dev"
+  kubectl config use-context dev-lab-confmind-dev-com >/dev/null && kc-where
+}
+
+kc-sv() {
+  export KUBECONFIG="$HOME/.kube/config_sv"
+  kubectl config use-context 'sitevision-elastx-cmind-cluster1-admin@sitevision-elastx-cmind-cluster1' >/dev/null && kc-where
+}
+
+# Added by cua-driver-rs installer — see https://github.com/trycua/cua
+export PATH="/Users/edkim/.local/bin:$PATH"
+
+# opencode
+export PATH=/Users/edkim/.opencode/bin:$PATH
