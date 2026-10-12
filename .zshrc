@@ -101,7 +101,7 @@ safe-brew-upgrade() {
   (( ${#safe[@]} )) && brew upgrade "${safe[@]}"
 }
 alias update-all='brew update && safe-brew-upgrade && zinit update && uv tool upgrade --all --exclude-newer $(date -v-1d +%Y-%m-%dT%H:%M:%SZ) && claude update && npm i -g @openai/codex && pi update && opencode upgrade && omp update && herdr update'
-alias update-dev='claude update && npm i -g @openai/codex && pi update && opencode upgrade && omp update && herdr update'
+alias update-dev='claude update && npm i -g @openai/codex && pi update && opencode update && omp update && herdr update'
 alias rr='ranger'
 
 alias gct="git log --graph --oneline --all"
