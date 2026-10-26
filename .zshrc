@@ -114,6 +114,11 @@ alias cm-localenv-argo='git add -A && git commit -m $(date +"%d-%m:%H%M")'
 # ArgoCD UI: https://argocd.cmind.local (user admin)
 alias cm-localenv-pw='kubectl --context k3d-cmind-local -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo'
 
+# ConfidentialMind WireGuard VPN
+alias cmvpn-up='sudo wg-quick up wg0'
+alias cmvpn-down='sudo wg-quick down wg0'
+alias cmvpn-status='sudo wg show'
+
 # ranger
 function ranger {
   local IFS=$'\t\n' 
@@ -261,6 +266,11 @@ kc-lab() {
 kc-dev() {
   export KUBECONFIG="$HOME/.kube/config_dev"
   kubectl config use-context dev-lab-confmind-dev-com >/dev/null && kc-where
+}
+
+kc-tools() {
+  export KUBECONFIG="$HOME/.kube/config_lab_tools-cluster"
+  kubectl config use-context cm-atnorth-lab--tools >/dev/null && kc-where
 }
 
 kc-sv() {
