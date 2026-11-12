@@ -17,5 +17,7 @@ session=$(jq -r '.agent_session.value // empty' <<<"$pane")
 ws=$(jq -r '.workspace_id' <<<"$pane")
 cwd=$(jq -r '.foreground_cwd // .cwd' <<<"$pane")
 
-root=$(herdr tab create --workspace "$ws" --cwd "$cwd" --focus | jq -r '.result.root_pane.pane_id')
+label=()
+[[ -n ${1:-} ]] && label=(--label "$1")
+root=$(herdr tab create --workspace "$ws" --cwd "$cwd" "${label[@]}" --focus | jq -r '.result.root_pane.pane_id')
 herdr pane run "$root" "claude -r $session --fork-session" >/dev/null

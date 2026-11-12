@@ -26,9 +26,11 @@ height = "40%"
 
 [[keys.command]]
 key = "prefix+f"
-type = "shell"
-command = "fork-claude"
+type = "popup"
+command = "read -rp 'tab name: ' n && fork-claude \"$n\""
 description = "fork the focused claude session into a new tab"
+width = "60%"
+height = "20%"
 
 [ui]
 status_indicators = "symbols"
