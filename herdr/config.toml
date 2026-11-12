@@ -1,4 +1,34 @@
-onboarding = true
+onboarding = false
+
+[[keys.command]]
+key = "prefix+a"
+type = "popup"
+command = "read -rp 'agent name: ' n && spawn-agent \"$n\""
+description = "spawn a sandboxed agent in a new worktree"
+width = "80%"
+height = "80%"
+
+[[keys.command]]
+key = "prefix+shift+a"
+type = "popup"
+command = "read -rp 'agent name: ' n && spawn-agent -a omp \"$n\""
+description = "spawn a sandboxed omp agent in a new worktree"
+width = "60%"
+height = "30%"
+
+[[keys.command]]
+key = "prefix+d"
+type = "popup"
+command = "reap-agent; read -rp 'press enter' _"
+description = "reap the focused agent's worktree and sandbox"
+width = "60%"
+height = "40%"
+
+[[keys.command]]
+key = "prefix+f"
+type = "shell"
+command = "fork-claude"
+description = "fork the focused claude session into a new tab"
 
 [ui]
 status_indicators = "symbols"
